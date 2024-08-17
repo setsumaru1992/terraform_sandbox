@@ -31,12 +31,9 @@ resource "aws_launch_configuration" "example" {
   instance_type = "t2.micro"
   security_groups = [aws_security_group.instance.id]
 
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              echo "current path: $(pwd)"
-              python3 -m http.server ${var.server_port} --directory . &
-              EOF
+  user_data = templatefile("user_data.sh", {
+    server_port = var.server_port
+  })
 
   lifecycle {
     create_before_destroy = true
